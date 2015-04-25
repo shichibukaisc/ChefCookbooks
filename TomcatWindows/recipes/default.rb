@@ -6,7 +6,8 @@
 
 TomcatSource = node['TomcatWindows']['Software'] + 'Tomcat ' + node['TomcatWindows']['TomcatVersion']
 ProgramFolder = node['TomcatWindows']['InstallDrive'] + '/App'
-CatalinaHost = ProgramFolder + "/Tomcat " + node['TomcatWindows']['TomcatVersion']
+ApacheFolder = ProgramFolder + '/Apache Group'
+CatalinaHost = ApacheFolder + "/Tomcat " + node['TomcatWindows']['TomcatVersion']
 CatalinaBase = CatalinaHost + '/Instances/' + node['TomcatWindows']['AppInstanceName'] + '_' + node['TomcatWindows']['Environment']
 
 raise if !(File.exists?(TomcatSource))
@@ -16,10 +17,15 @@ directory ProgramFolder do
   action :create
 end
 
+directory ApacheFolder do
+  inherits true
+  action :create
+end
+
 ruby_block "get the windows resources" do
   block do
     #FileUtils.mkdir_p "C:/App2"
-    FileUtils.cp_r(TomcatSource, ProgramFolder)
+    FileUtils.cp_r(TomcatSource, ApacheFolder)
   end
   not_if { File.exists?(CatalinaHost) && File.directory?(CatalinaHost) }
 end
