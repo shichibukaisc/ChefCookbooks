@@ -1,23 +1,36 @@
 #
-# Cookbook Name:: TomcatWindows
-# Recipe:: default
-#
-# Copyright (c) 2015 The Authors, All Rights Reserved.
-
+#  
 #remote_directory "C:/App/Apache Group/Tomcat 8.0.21" do
 #  inherits true
 #  source "Tomcat8.0.21"
-#end
 
-#ruby windows_zipfile 'C:/Temp' do
-#  source 'C:/Software/apache-tomcat-8.0.21-windows-x64.zip'
-#  action :unzip
-#end
+TomcatSource = node['TomcatWindows']['Software'] + 'Tomcat ' + node['TomcatWindows']['TomcatVersion']
+ProgramFolder = node['TomcatWindows']['InstallDrive'] + '/App'
+CatalinaHost = ProgramFolder + "/Tomcat " + node['TomcatWindows']['TomcatVersion']
+CatalinaBase = CatalinaHost + '/Instances/' + node['TomcatWindows']['AppInstanceName'] + '_' + node['TomcatWindows']['Environment']
+
+raise if !(File.exists?(TomcatSource))
+  
+directory ProgramFolder do
+  inherits true
+  action :create
+end
 
 ruby_block "get the windows resources" do
   block do
-    FileUtils.mkdir_p "C:/App2"
-    FileUtils.cp_r("C:/Software/Tomcat 8.0.21", "C:/App2")
+    #FileUtils.mkdir_p "C:/App2"
+    FileUtils.cp_r(TomcatSource, ProgramFolder)
   end
-  not_if { File.exists?("C:/App2/Tomcat 8.0.21") && File.directory?("C:/App2/Tomcat 8.0.21") }
+  not_if { File.exists?(CatalinaHost) && File.directory?(CatalinaHost) }
 end
+
+directory CatalinaHost + '/Instances' do
+  inherits true
+  action :create
+end
+
+directory CatalinaBase do
+  inherits true
+  action :create
+end
+
