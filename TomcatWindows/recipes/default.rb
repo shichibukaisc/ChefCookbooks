@@ -10,7 +10,7 @@ ApacheFolder = ProgramFolder + '/Apache Group'
 CatalinaHost = ApacheFolder + "/Tomcat " + node['TomcatWindows']['TomcatVersion']
 CatalinaBase = CatalinaHost + '/Instances/' + node['TomcatWindows']['AppInstanceName'] + '_' + node['TomcatWindows']['Environment']
 
-raise if !(File.exists?(TomcatSource))
+raise if !File.exists?(TomcatSource)
   
 directory ProgramFolder do
   inherits true
